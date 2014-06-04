@@ -1,0 +1,10 @@
+{
+	"name": "Listing applications",
+	"steps": [{
+		"instruction": "Type <span class='tCmd'>cf apps</span> in console<hr>This command returns a list of running applications and their accessing urls<br>",
+		"cmd": "cf apps"
+	}, {
+		"instruction": "Here is a list of application that is running<br><br>To get the application status, type <span class='tCmd'>cf app [app name]</span><hr><span class='tEnd'>End of 'Listing applications' tutorial.</span>",
+		"cmd": ""
+	}]
+}

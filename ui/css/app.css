@@ -1,0 +1,55 @@
+html, body {
+	background-image: url('../images/bg.jpg');
+	height:100%;
+}
+
+#appContainer {
+	position: absolute;
+	bottom: 55px;
+	top: 55px;
+	right: 0; 
+	left: 0;
+	background: #282828;	
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+#terminalWrapper {
+	position: relative;
+	padding:  0 20px 35px ;
+	height: 100%;
+}
+
+#consoleWrapper {
+	width: 100%;	
+	height: 100%;
+	padding: 0;		
+}
+
+#consoleWrapper .intro {
+	color: #ddd;
+}
+
+#inputWrapper {
+	width: 100%;
+	overflow: hidden;
+	margin: auto;
+	padding:0;	
+	background: #111;
+}
+
+#splashDiv {
+	position: absolute;	
+	top: 0; bottom: 0; left: 0; right: 0;
+	background: rgba(255,255,255,.5);
+	z-index: 0	
+}
+
+.letterpress {
+	color:#555;
+	text-shadow: 0 1px 0 #fff;
+}
+.letterpress-white {
+	color:#eee;
+	text-shadow: 0 -1px 0 #555;
+}

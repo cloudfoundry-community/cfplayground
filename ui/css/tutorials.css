@@ -1,0 +1,12 @@
+.tCmd {
+	background: #ddd;
+	border: 1px #999 solid;
+	color: #111;
+	padding: 3px;
+}
+
+.tEnd {
+	font-size: 1.5em;
+	padding: 5px;
+	color: #555;
+}
