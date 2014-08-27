@@ -9,15 +9,16 @@
 	<link rel="stylesheet" href="css/tutorials.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="css/jquery.terminal.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="css/jquery.fileupload.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>	
+	<script type="text/javascript" src="js/jquery-1.10.1.min.js"></script>
 	<script type="text/javascript" src="js/jquery.terminal-0.8.7.min.js"></script>
 	<script type="text/javascript" src="js/jquery.mousewheel.js"></script>
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.widget.js"></script>
 	<script type="text/javascript" src="js/jquery.fileupload.js"></script>
+	<script type="text/javascript" src="js/env.js"></script>
 	<script type="text/javascript" src="js/websocket.js"></script>
 	<script type="text/javascript" src="js/terminal.js"></script>
-	
+
 
 	<title>Cloud Foundry Playground</title>
 </head>
@@ -27,15 +28,15 @@
 	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 	  <div class="container-fluid">
         <!-- Brand and toggle get grouped for better mobile display -->
-        
+
         <span class="navbar-brand" data-toggle="modal" data-target="#cfMenu" style="cursor: pointer; cursor: hand;">
           	<img src="images/cloud-foundry-logo.png" style="width:35px" /> CF Playground <span class="glyphicon glyphicon-th"></span>
       	</span>
-        
+
 
         <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-9">          
-           <ul class="nav navbar-nav navbar-right">        
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-9">
+           <ul class="nav navbar-nav navbar-right">
 	        <li class="dropdown">
 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Cloud Foundry Tuturials <span class="caret"></span></a>
 	          <ul class="dropdown-menu" role="menu">
@@ -58,7 +59,7 @@
 	<div style="height:5px; background:#CC5F39; display:block"></div>
 
 	<div id="appContainer">
-		<div style="float: left; width:65%; height:100%">	
+		<div style="float: left; width:65%; height:100%">
 			<div id="terminalWrapper">
 				<div id="consoleWrapper">
 					<div id="terminal"></div>
@@ -69,14 +70,14 @@
 			</div>
 		</div>
 
-		<div style="float: right; width: 35%; height:100%; padding:20px; position:relative;">			
-			
+		<div style="float: right; width: 35%; height:100%; padding:20px; position:relative;">
+
 			<div id="tutorialWrapper" style="height: 100%; background:#838271; color:#ddd" class="well">
-				<div id="tutorialTitle" class="letterpress-white" style="font-size:1.3em;font-weight:bold;text-align:center;">Select a course from the dropdown box above</div>		
-				<hr>		
+				<div id="tutorialTitle" class="letterpress-white" style="font-size:1.3em;font-weight:bold;text-align:center;">Select a course from the dropdown box above</div>
+				<hr>
 				<div id="tutorialStep"></div>
 			</div>
-			
+
 			<a href="cloudfoundry.org" target="_blank" style="border:none">
 				<img src="./images/logo_org.png" style="position:absolute; bottom:30px; right:30px; width:130px" />
 			</a>
@@ -86,7 +87,7 @@
 	</div>
 
 	<div style="position:absolute; bottom:50px; left:0; right:0; height:5px; background:#CC5F39; display:block"></div>
-	
+
 	<nav class="navbar navbar-inverse navbar-fixed-bottom" role="navigation">
 	</nav>
 
@@ -109,24 +110,24 @@
 				        <i class="glyphicon glyphicon-import"></i>
 				        <span>Select files...</span>
 				        <!-- The file input field used as target for the file upload widget -->
-				        <input id="fileupload" type="file" name="files[]" multiple>			        
-				    </span>				    				    				    
+				        <input id="fileupload" type="file" name="files[]" multiple>
+				    </span>
 		        </div>
 	        </div>
 	        <div style="float:left; width:2px; height:200px; background:#bbb;"></div>
-	        
+
 	        <div style="float:left; width:30%; text-align:center; padding:10px">
 	        	<h4>File control</h4>
 	        	<div style="height:15px;"></div>
 	        	<span class="btn btn-info">
 			        <i class="glyphicon glyphicon-eye-open"></i>
-			        <span>View uploaded files</span>				       
+			        <span>View uploaded files</span>
 			    </span>
 			    <hr>
 	        	<span class="btn btn-danger">
 			        <i class="glyphicon glyphicon-trash"></i>
-			        <span>Delete all files</span>				       
-			    </span>	        	
+			        <span>Delete all files</span>
+			    </span>
 	        </div>
 	        <div style="float:left; width:2px; height:200px; background:#bbb;"></div>
 
@@ -136,7 +137,7 @@
 	      <div class="modal-footer">
 	      	<div style="float:left;" id="divSessionId"></div>
 	      	<div style="float:right">
-	      		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>	
+	      		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 	      	</div>
 	        <div style="clear:both"></div>
 	      </div>
@@ -168,24 +169,24 @@
 					</button>
 				  </div>
 				 </form>
-				
+
 			</div>
-			<div style="clear:both"></div>			
+			<div style="clear:both"></div>
 		</div>
 	</div>
-	
+
 </body>
 
-<script>	
+<script>
    	var cfTerm = new cfTerminal()
 	var cfToken;
-	
+
 	var ws = new cfWebsocket( cfTerm )
 
-	$(this).on("terminal_command", function(e, msg) {				
+	$(this).on("terminal_command", function(e, msg) {
 		ws.send(msg)
 	})
-	
+
 	$(function () {
 	    $('#fileupload').fileupload({
 	        dataType: 'json',

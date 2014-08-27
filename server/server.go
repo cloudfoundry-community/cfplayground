@@ -21,6 +21,8 @@ import (
 )
 
 var Port string = "8080"
+var Url string = "localhost"
+var WebSocketPort string = "8080"
 
 type Server interface {
 	Serve(h ServerHandlers)
@@ -37,6 +39,7 @@ func RegisterHandler(h ServerHandlers) {
 	r.Methods("POST").Path("/upload/{token}").HandlerFunc(h.UploadHandler)
 
 	http.HandleFunc("/ws", h.InitSession)
+	http.HandleFunc("/ui/js/env.js", envHandler)
 	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir(path.Join(h.BasePath(), "ui")))))
 	http.Handle("/", r)
 }
@@ -50,6 +53,10 @@ func bind() {
 
 var listenAndServe = func(bind string) error {
 	return http.ListenAndServe(bind, nil)
+}
+
+func envHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, `var wsport = %s;var wsIP = "%s";`, WebSocketPort, Url)
 }
 
 func getConsoleInput(user *users.UniqueUser) {

@@ -1,0 +1,31 @@
+{
+	"ImportPath": "github.com/cloudfoundry-community/cfplayground",
+	"GoVersion": "go1.2.1",
+	"Deps": [
+		{
+			"ImportPath": "github.com/cloudfoundry-community/go-cfenv",
+			"Comment": "v1.3-10-gdd5883f",
+			"Rev": "dd5883ff0db7a6ab8934a2ec4af6da85c743813d"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1be7a086a5fd6440ef16fe96baeda0c78282b980"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "9ede152210fa25c1377d33e867cb828c19316445"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Rev": "6afc23d0532104c2f3ef594826915f2bbc16833a"
+		},
+		{
+			"ImportPath": "github.com/mitchellh/mapstructure",
+			"Rev": "6fb2c832bcac61d01212ab1d172f7a14a8585b07"
+		},
+		{
+			"ImportPath": "github.com/nu7hatch/gouuid",
+			"Rev": "87bcc4729f2c5a08d2513ad10684c6bbd256380f"
+		}
+	]
+}

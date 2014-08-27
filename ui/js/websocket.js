@@ -1,6 +1,3 @@
-var wsport = 8080;
-var wsIP = "localhost";
-
 var cfWebsocket = function(cfTerm) {
 	var wskt = WebSocket;
 	var connect = function() {
