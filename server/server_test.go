@@ -6,8 +6,8 @@ import (
 	"code.google.com/p/go.net/websocket"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/simonleung8/cfplayground/server"
-	"github.com/simonleung8/cfplayground/server/fakes"
+	. "github.com/cloudfoundry-community/cfplayground/server"
+	"github.com/cloudfoundry-community/cfplayground/server/fakes"
 )
 
 var _ = Describe("Server", func() {

@@ -8,7 +8,7 @@ import (
 	"net/url"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/simonleung8/cfplayground/websocket"
+	. "github.com/cloudfoundry-community/cfplayground/websocket"
 
 	wsClient "code.google.com/p/go.net/websocket"
 )

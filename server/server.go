@@ -12,10 +12,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/simonleung8/cfplayground/cf"
-	. "github.com/simonleung8/cfplayground/commands"
-	"github.com/simonleung8/cfplayground/users"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/cf"
+	. "github.com/cloudfoundry-community/cfplayground/commands"
+	"github.com/cloudfoundry-community/cfplayground/users"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 
 	"github.com/gorilla/mux"
 )

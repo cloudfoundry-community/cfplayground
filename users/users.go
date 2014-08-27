@@ -5,9 +5,9 @@ import (
 	"path"
 	"time"
 
-	"github.com/simonleung8/cfplayground/cf"
-	"github.com/simonleung8/cfplayground/tutorials"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/cf"
+	"github.com/cloudfoundry-community/cfplayground/tutorials"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 
 	"github.com/nu7hatch/gouuid"
 )

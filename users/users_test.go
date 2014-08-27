@@ -3,9 +3,9 @@ package users_test
 import (
 	"net/http"
 
-	"github.com/simonleung8/cfplayground/cf/fakes"
-	. "github.com/simonleung8/cfplayground/users"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/cf/fakes"
+	. "github.com/cloudfoundry-community/cfplayground/users"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/simonleung8/cfplayground/server"
+	"github.com/cloudfoundry-community/cfplayground/server"
 )
 
 type FakeServerHandlers struct {

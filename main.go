@@ -1,6 +1,6 @@
 package main
 
-import "github.com/simonleung8/cfplayground/server"
+import "github.com/cloudfoundry-community/cfplayground/server"
 
 func main() {
 	server.Serve(server.NewHandler("./"))

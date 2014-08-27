@@ -4,8 +4,8 @@ package fakes
 import (
 	"sync"
 
-	"github.com/simonleung8/cfplayground/cf"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/cf"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 )
 
 type FakeCLI struct {

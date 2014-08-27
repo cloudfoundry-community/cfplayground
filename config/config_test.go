@@ -5,7 +5,7 @@ import (
 	"os"
 	"path"
 
-	. "github.com/simonleung8/cfplayground/config"
+	. "github.com/cloudfoundry-community/cfplayground/config"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

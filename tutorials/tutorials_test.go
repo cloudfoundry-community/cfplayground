@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 
-	. "github.com/simonleung8/cfplayground/tutorials"
+	. "github.com/cloudfoundry-community/cfplayground/tutorials"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

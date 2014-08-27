@@ -3,7 +3,7 @@ CF Playground
 The goal of this project is to provide an easily accessible environment for users who want to experience Cloud Foundry, without having to setup and to learn the operation of the platform.  CF Playground provides an interactive tutorial.
 
 <p/>
-![CF Playground in Action](https://github.com/simonleung8/cfplayground/raw/master/images/cfplayground.jpg)
+![CF Playground in Action](https://github.com/cloudfoundry-community/cfplayground/raw/master/images/cfplayground.jpg)
 <p/>
 
 Setting up CF Playground
@@ -20,8 +20,8 @@ You will need to host your own Cloud Foundry environment (bosh-lite or any full 
   
 3) Download CF PLayground
 
-    go get github.com/simonleung8/cfplayground
-    cd $GOPATH/src/github.com/simonleung8/cfplayground
+    go get github.com/cloudfoundry-community/cfplayground
+    cd $GOPATH/src/github.com/cloudfoundry-community/cfplayground
   
   *(Ignore any warnings about "no buildable Go source files")
   

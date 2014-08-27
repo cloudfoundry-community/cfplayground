@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"github.com/simonleung8/cfplayground/users"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/users"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 )
 
 func CfLogin(user *users.UniqueUser) {

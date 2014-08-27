@@ -15,9 +15,9 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/simonleung8/cfplayground/config"
-	. "github.com/simonleung8/cfplayground/copy"
-	"github.com/simonleung8/cfplayground/websocket"
+	"github.com/cloudfoundry-community/cfplayground/config"
+	. "github.com/cloudfoundry-community/cfplayground/copy"
+	"github.com/cloudfoundry-community/cfplayground/websocket"
 )
 
 const (
