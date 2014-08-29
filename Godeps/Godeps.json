@@ -1,0 +1,38 @@
+{
+	"ImportPath": "github.com/cloudfoundry-community/cfplayground",
+	"GoVersion": "go1.2.1",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "code.google.com/p/go.net/websocket",
+			"Comment": "null-131",
+			"Rev": "b50b866786741d3f936d7456f6bd4c2641e2b042"
+		},
+		{
+			"ImportPath": "github.com/gorilla/context",
+			"Rev": "1be7a086a5fd6440ef16fe96baeda0c78282b980"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Rev": "9ede152210fa25c1377d33e867cb828c19316445"
+		},
+		{
+			"ImportPath": "github.com/gorilla/websocket",
+			"Rev": "1e6e1281b05fe5eaaf3300bdedb8e75880b9c6fd"
+		},
+		{
+			"ImportPath": "github.com/nu7hatch/gouuid",
+			"Rev": "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
+		},
+		{
+			"ImportPath": "github.com/onsi/ginkgo",
+			"Rev": "b7291895c890c7f560d82751954c5a7501c57a7f"
+		},
+		{
+			"ImportPath": "github.com/onsi/gomega",
+			"Rev": "036273e6f643552b16fe7a6464afd2ae0324992e"
+		}
+	]
+}
