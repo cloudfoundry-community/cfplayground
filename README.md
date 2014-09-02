@@ -11,7 +11,7 @@ Setting up CF Playground
 The following instruction is for OSX/Linux, windows support is coming soon.
 You will need to host your own Cloud Foundry environment (bosh-lite or any full deployment)
 
-1) Ensure that [Go](http://golang.org/) version 1.2.x-64bit has been installed on the system
+1) Ensure that [Go](http://golang.org/) version 1.2+ is installed on the system
 
 2) Setup the GOPATH
 
@@ -25,7 +25,7 @@ You will need to host your own Cloud Foundry environment (bosh-lite or any full 
   
   *(Ignore any warnings about "no buildable Go source files")
   
-4) Create a config file under `config/` with the name `config.json` with the info to your Cloud Foundry environment, a sample config file is provided for reference `config/sameple_config.json`
+4) Create a config file `config.json` under `config/` with the info of your Cloud Foundry environment, a sample config file is provided for reference `config/sameple_config.json`
   
 5) Run CF Playground
 
