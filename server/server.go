@@ -1,9 +1,3 @@
-/**
-- courses obj
-- left is console and option menu
-- right is course narrating and course menu
-*/
-
 package server
 
 import (

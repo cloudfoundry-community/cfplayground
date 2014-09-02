@@ -6,16 +6,9 @@ import (
 )
 
 func CfLogin(user *users.UniqueUser) {
-	//scan, err := user.CF.Login()
-	//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[start]"))
 	err := user.CF.Login()
 	if err != nil {
 
-	} else {
-		// for scan.Scan() {
-		// 	user.Pipe.Conn.WriteMessage(websocket.TextMessage, scan.Bytes())
-		// }
-		//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[done!]"))
 	}
 }
 
@@ -23,9 +16,6 @@ func CfApps(user *users.UniqueUser) {
 	user.CF.Output(websocket.Message{"echo", "input", "cf apps"})
 	err := user.CF.Apps()
 	if err != nil {
-
-	} else {
-
 	}
 }
 
@@ -41,31 +31,15 @@ func CfApp(user *users.UniqueUser, appName string) {
 
 func CfDelete(user *users.UniqueUser, appName string) {
 	user.Pipe.Out <- &websocket.Message{"echo", "input", "cf delete " + appName}
-	//scan, err := user.CF.Login()
-	//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[start]"))
 	err := user.CF.Delete(appName)
 	if err != nil {
-
-	} else {
-		// for scan.Scan() {
-		// 	user.Pipe.Conn.WriteMessage(websocket.TextMessage, scan.Bytes())
-		// }
-		//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[done!]"))
 	}
 }
 
 func CfPush(user *users.UniqueUser) {
 	user.Pipe.Out <- &websocket.Message{"echo", "input", "cf push"}
-	//scan, err := user.CF.Login()
-	//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[start]"))
 	err := user.CF.Push()
 	if err != nil {
-
-	} else {
-		// for scan.Scan() {
-		// 	user.Pipe.Conn.WriteMessage(websocket.TextMessage, scan.Bytes())
-		// }
-		//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[done!]"))
 	}
 }
 
