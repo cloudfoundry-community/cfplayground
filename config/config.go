@@ -42,6 +42,6 @@ func New(filePath string) (*Config, error) {
 	} else if configs.Server.Space == "" {
 		return nil, fmt.Errorf("Error: server space is missing")
 	}
-    
+	
 	return &configs, nil
 }
