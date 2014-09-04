@@ -17,6 +17,7 @@ type ServerInfo struct {
 	Pass  string `json:"pass"`
 	Org   string `json:"org"`
 	Space string `json:"space"`
+	SkipSSLValidation bool `json:"skip-ssl-validation"`
 }
 
 func New(filePath string) (*Config, error) {
@@ -40,6 +41,8 @@ func New(filePath string) (*Config, error) {
 		return nil, fmt.Errorf("Error: server organization is missing")
 	} else if configs.Server.Space == "" {
 		return nil, fmt.Errorf("Error: server space is missing")
+	} else if configs.Server.SkipSSLValidation == nil {
+		return nil, fmt.Errorf("Error: ")
 	}
 
 	return &configs, nil
