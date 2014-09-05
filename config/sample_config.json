@@ -4,6 +4,7 @@
     "login": "admin",
     "pass": "admin",
     "org": "cfplayground",
-    "space": "test"
+    "space": "test",
+    "skip-ssl-validation": true
   }
 }
