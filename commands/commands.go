@@ -36,9 +36,9 @@ func CfDelete(user *users.UniqueUser, appName string) {
 	}
 }
 
-func CfPush(user *users.UniqueUser) {
-	user.Pipe.Out <- &websocket.Message{"echo", "input", "cf push"}
-	err := user.CF.Push()
+func CfPush(user *users.UniqueUser, appName string) {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", "cf push " + appName}
+	err := user.CF.Push(appName)
 	if err != nil {
 	}
 }

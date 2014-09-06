@@ -30,7 +30,7 @@ type CLI interface {
 	Login() error
 	Apps() error
 	App(string) error
-	Push() error
+	Push(string) error
 	Delete(string) error
 	Output(websocket.Message)
 	EnvVar() string
@@ -141,8 +141,8 @@ func (c *CF) App(appName string) error {
 	return nil
 }
 
-func (c *CF) Push() error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", "userApp1332", "-p", "dora/")
+func (c *CF) Push(appName string) error {
+	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", appName, "-p", "dora/")
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}

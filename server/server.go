@@ -66,8 +66,8 @@ func processConsoleInput(user *users.UniqueUser, message string) {
 		CfApps(user)
 	} else if strings.HasPrefix(message, "cf app ") {
 		CfApp(user, strings.Trim(message[7:], " "))
-	} else if message == "cf push" {
-		CfPush(user)
+	} else if strings.HasPrefix(message,"cf push ") {
+		CfPush(user, strings.Trim(message[8:]," "))
 	} else if strings.HasPrefix(message, "cf delete ") {
 		CfDelete(user, strings.Trim(message[10:], " "))
 	} else if strings.HasPrefix(message, "[course]") {
