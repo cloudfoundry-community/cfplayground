@@ -27,6 +27,12 @@ type FakeServerHandlers struct {
 		arg1 http.ResponseWriter
 		arg2 *http.Request
 	}
+	DeleteHandlerStub        func(http.ResponseWriter, *http.Request)
+	deleteHandlerMutex       sync.RWMutex
+	deleteHandlerArgsForCall []struct {
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+	}
 	BasePathStub        func() string
 	basePathMutex       sync.RWMutex
 	basePathArgsForCall []struct{}
@@ -105,6 +111,30 @@ func (fake *FakeServerHandlers) UploadHandlerArgsForCall(i int) (http.ResponseWr
 	fake.uploadHandlerMutex.RLock()
 	defer fake.uploadHandlerMutex.RUnlock()
 	return fake.uploadHandlerArgsForCall[i].arg1, fake.uploadHandlerArgsForCall[i].arg2
+}
+
+func (fake *FakeServerHandlers) DeleteHandler(arg1 http.ResponseWriter, arg2 *http.Request) {
+	fake.deleteHandlerMutex.Lock()
+	defer fake.deleteHandlerMutex.Unlock()
+	fake.deleteHandlerArgsForCall = append(fake.deleteHandlerArgsForCall, struct {
+		arg1 http.ResponseWriter
+		arg2 *http.Request
+	}{arg1, arg2})
+	if fake.DeleteHandlerStub != nil {
+		fake.DeleteHandlerStub(arg1, arg2)
+	}
+}
+
+func (fake *FakeServerHandlers) DeleteHandlerCallCount() int {
+	fake.deleteHandlerMutex.RLock()
+	defer fake.deleteHandlerMutex.RUnlock()
+	return len(fake.deleteHandlerArgsForCall)
+}
+
+func (fake *FakeServerHandlers) DeleteHandlerArgsForCall(i int) (http.ResponseWriter, *http.Request) {
+	fake.deleteHandlerMutex.RLock()
+	defer fake.deleteHandlerMutex.RUnlock()
+	return fake.deleteHandlerArgsForCall[i].arg1, fake.deleteHandlerArgsForCall[i].arg2
 }
 
 func (fake *FakeServerHandlers) BasePath() string {

@@ -1,5 +1,6 @@
 containers
-plan.txt
+*.test
 assets/cf
 .DS_Store
 /config/config.json
+progress.txt

@@ -29,10 +29,12 @@ type FakeCLI struct {
 	appReturns struct {
 		result1 error
 	}
-	PushStub        func() error
+	PushStub        func(string) error
 	pushMutex       sync.RWMutex
-	pushArgsForCall []struct{}
-	pushReturns     struct {
+	pushArgsForCall []struct {
+		arg1 string
+	}
+	pushReturns struct {
 		result1 error
 	}
 	DeleteStub        func(string) error
@@ -142,12 +144,14 @@ func (fake *FakeCLI) AppReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeCLI) Push() error {
+func (fake *FakeCLI) Push(arg1 string) error {
 	fake.pushMutex.Lock()
 	defer fake.pushMutex.Unlock()
-	fake.pushArgsForCall = append(fake.pushArgsForCall, struct{}{})
+	fake.pushArgsForCall = append(fake.pushArgsForCall, struct {
+		arg1 string
+	}{arg1})
 	if fake.PushStub != nil {
-		return fake.PushStub()
+		return fake.PushStub(arg1)
 	} else {
 		return fake.pushReturns.result1
 	}
@@ -157,6 +161,12 @@ func (fake *FakeCLI) PushCallCount() int {
 	fake.pushMutex.RLock()
 	defer fake.pushMutex.RUnlock()
 	return len(fake.pushArgsForCall)
+}
+
+func (fake *FakeCLI) PushArgsForCall(i int) string {
+	fake.pushMutex.RLock()
+	defer fake.pushMutex.RUnlock()
+	return fake.pushArgsForCall[i].arg1
 }
 
 func (fake *FakeCLI) PushReturns(result1 error) {

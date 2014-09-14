@@ -29,6 +29,7 @@ func RegisterHandler(h ServerHandlers) {
 	r := mux.NewRouter()
 	r.Methods("GET").Path("/").HandlerFunc(h.RedirectBase)
 	r.Methods("POST").Path("/upload/{token}").HandlerFunc(h.UploadHandler)
+	r.Methods("GET").Path("/delete/{token}").HandlerFunc(h.DeleteHandler)
 
 	http.HandleFunc("/ws", h.InitSession)
 	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir(path.Join(h.BasePath(), "ui")))))

@@ -103,9 +103,9 @@ func (c *CF) Login() error {
 	if c.configs.Server.SkipSSLValidation {
 		sslValidation = "--skip-ssl-validation"
 	}
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "login", "-a", c.configs.Server.Url, "-u", 
-		                c.configs.Server.Login, "-p", c.configs.Server.Pass, "-o", c.configs.Server.Org, 
-		                "-s", c.configs.Server.Space, sslValidation)
+	cmd := exec.Command(path.Join(c.envVar, "pcf"), "login", "-a", c.configs.Server.Url, "-u",
+		c.configs.Server.Login, "-p", c.configs.Server.Pass, "-o", c.configs.Server.Org,
+		"-s", c.configs.Server.Space, sslValidation)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"login", "stdout", c.out}
 

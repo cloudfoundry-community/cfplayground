@@ -123,7 +123,7 @@
 			        <span>View uploaded files</span>				       
 			    </span>
 			    <hr>
-	        	<span class="btn btn-danger">
+			    <span class="btn btn-danger" onclick="deleteUploaded()">
 			        <i class="glyphicon glyphicon-trash"></i>
 			        <span>Delete all files</span>				       
 			    </span>	        	
@@ -177,7 +177,7 @@
 </body>
 
 <script>	
-   	var cfTerm = new cfTerminal()
+  var cfTerm = new cfTerminal()
 	var cfToken;
 	
 	var ws = new cfWebsocket( cfTerm )
@@ -206,7 +206,18 @@
 	function newSession() {
 		$("#splashDiv").css("display","none")
 		ws.connect();
-	}
+  }
+
+  function deleteUploaded() {
+    if (confirm("Confirm deleting all uploaded files?")) {
+      $.get( "/delete/"+cfToken, function() {
+        alert("All uploaded files have been deleted.")
+      })
+      .fail(function() {
+        alert( "There is an error deleting uploaded files" );
+      })
+    } 
+  }
 
 </script>
 

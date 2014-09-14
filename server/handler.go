@@ -6,18 +6,20 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 
-	"github.com/gorilla/mux"
 	"github.com/cloudfoundry-community/cfplayground/cf"
 	. "github.com/cloudfoundry-community/cfplayground/commands"
 	"github.com/cloudfoundry-community/cfplayground/users"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
+	"github.com/gorilla/mux"
 )
 
 type ServerHandlers interface {
 	InitSession(http.ResponseWriter, *http.Request)
 	RedirectBase(http.ResponseWriter, *http.Request)
 	UploadHandler(http.ResponseWriter, *http.Request)
+	DeleteHandler(http.ResponseWriter, *http.Request)
 	BasePath() string
 }
 
@@ -55,10 +57,6 @@ func (h Handlers) RedirectBase(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handlers) UploadHandler(w http.ResponseWriter, r *http.Request) {
-	// Planned feature:
-	//append all uploaded file to user dir
-	//unless user init a 'clean dir' command
-
 	token := mux.Vars(r)["token"]
 
 	//os.RemoveAll(path.Join(users.List(token).CF.EnvVar, "app"))
@@ -97,6 +95,14 @@ func (h Handlers) UploadHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func (h Handlers) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	token := mux.Vars(r)["token"]
+	err := os.RemoveAll(filepath.Join("./containers/", token, "app"))
+	if err != nil {
+		fmt.Printf("Error deleting uploaded files for %s: %v \n", token, err)
 	}
 }
 
