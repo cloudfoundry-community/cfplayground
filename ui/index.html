@@ -211,7 +211,7 @@
   function deleteUploaded() {
     if (confirm("Confirm deleting all uploaded files?")) {
       $.get( "/delete/"+cfToken, function() {
-        alert("All uploaded files have been deleted.")
+	alert("All uploaded files have been deleted. 'cf push' will push default app dora")
       })
       .fail(function() {
         alert( "There is an error deleting uploaded files" );
