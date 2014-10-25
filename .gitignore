@@ -3,4 +3,5 @@ containers
 assets/cf
 .DS_Store
 /config/config.json
+/config/backup-configs
 progress.txt
