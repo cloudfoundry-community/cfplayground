@@ -10,6 +10,7 @@ import (
 
 	"github.com/cloudfoundry-community/cfplayground/cf"
 	. "github.com/cloudfoundry-community/cfplayground/commands"
+	"github.com/cloudfoundry-community/cfplayground/config"
 	"github.com/cloudfoundry-community/cfplayground/users"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
 	"github.com/gorilla/mux"
@@ -39,14 +40,26 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 
 	token := users.GenerateToken()
 
+	configs := readServerConfig()
+
+	newCf := cf.New(
+		token,
+		pipe.Out,
+		pipe.In,
+		pipe.Prompt,
+		h.basePath,
+		configs,
+	)
+
 	user := users.New(
 		w,
 		r,
 		h.basePath,
 		token,
-		cf.New(token, pipe.Out, pipe.In, pipe.Prompt, h.basePath).(*cf.CF),
+		newCf.(*cf.CF),
 		pipe,
 	)
+
 	user.Pipe.Out <- &websocket.Message{"token", "", user.Token}
 	go getConsoleInput(&user)
 	CfLogin(&user)
@@ -108,4 +121,12 @@ func (h Handlers) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (h Handlers) BasePath() string {
 	return h.basePath
+}
+
+func readServerConfig() *config.Config {
+	configs, err := config.New("./config/config.json")
+	if err != nil {
+		panic("Failed to read config file " + err.Error())
+	}
+	return configs
 }

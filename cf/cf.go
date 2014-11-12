@@ -66,7 +66,7 @@ func (w *msgWriter) Write(b []byte) (n int, err error) {
 	return len(b), nil
 }
 
-func New(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string) CLI {
+func New(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string, configs *config.Config) CLI {
 	containerPath := path.Join(basePath, "containers")
 	userFolder := path.Join(containerPath, token)
 
@@ -86,13 +86,15 @@ func New(token string, out chan *websocket.Message, in chan []byte, prompt chan 
 	}
 
 	absPath, _ := filepath.Abs(userFolder)
-	configs, err := config.New("./config/config.json")
 
-	if err != nil {
-		panic("Failed to read config file " + err.Error())
+	return &CF{
+		absPath,
+		StatusType{WAITING, ""},
+		out,
+		in,
+		prompt,
+		configs,
 	}
-
-	return &CF{absPath, StatusType{WAITING, ""}, out, in, prompt, configs}
 }
 
 func (c *CF) Login() error {
