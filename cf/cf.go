@@ -12,18 +12,11 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 
 	"github.com/cloudfoundry-community/cfplayground/config"
 	. "github.com/cloudfoundry-community/cfplayground/copy"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
-)
-
-const (
-	WAITING = iota //waiting for command
-	INPUT          //performing a command and waiting for input from user
-	COMMAND        //performing a command, no input from user is expected
 )
 
 type CLI interface {
@@ -46,11 +39,6 @@ type CF struct {
 	configs *config.Config
 }
 
-type StatusType struct {
-	Job    int
-	Detail string
-}
-
 type msgWriter struct {
 	cmd     string
 	msgType string
@@ -66,23 +54,23 @@ func (w *msgWriter) Write(b []byte) (n int, err error) {
 	return len(b), nil
 }
 
-func New(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string, configs *config.Config) CLI {
-	containerPath := path.Join(basePath, "containers")
-	userFolder := path.Join(containerPath, token)
+func NewCli(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string, configs *config.Config) CLI {
+	containerPath := filepath.Join(basePath, "containers")
+	userFolder := filepath.Join(containerPath, token)
 
-	err := os.MkdirAll(path.Join(userFolder), os.ModePerm)
+	err := os.MkdirAll(filepath.Join(userFolder), os.ModePerm)
 	if err != nil {
-		panic("Cannot create user directory: " + path.Join(containerPath, token))
+		panic("Cannot create user directory: " + filepath.Join(containerPath, token))
 	}
 
-	err = CopyFile(path.Join(basePath, "assets/cf/", "pcf"), path.Join(userFolder, "pcf"))
+	err = CopyFile(filepath.Join(basePath, "assets/cf/", "pcf"), filepath.Join(userFolder, "pcf"))
 	if err != nil {
-		panic("Cannot copy cf binary to user directory: " + path.Join(userFolder))
+		panic("Cannot copy cf binary to user directory: " + filepath.Join(userFolder))
 	}
 
-	err = CopyDir(path.Join(basePath, "assets", "dora"), path.Join(userFolder, "dora"))
+	err = CopyDir(filepath.Join(basePath, "assets", "dora"), filepath.Join(userFolder, "dora"))
 	if err != nil {
-		panic("Cannot copy default CF App to user directory: " + path.Join(userFolder, "app"))
+		panic("Cannot copy default CF App to user directory: " + filepath.Join(userFolder, "app"))
 	}
 
 	absPath, _ := filepath.Abs(userFolder)
@@ -105,7 +93,7 @@ func (c *CF) Login() error {
 	if c.configs.Server.SkipSSLValidation {
 		sslValidation = "--skip-ssl-validation"
 	}
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "login", "-a", c.configs.Server.Url, "-u",
+	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "login", "-a", c.configs.Server.Url, "-u",
 		c.configs.Server.Login, "-p", c.configs.Server.Pass, "-o", c.configs.Server.Org,
 		"-s", c.configs.Server.Space, sslValidation)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
@@ -120,7 +108,7 @@ func (c *CF) Login() error {
 }
 
 func (c *CF) Apps() error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "apps")
+	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "apps")
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"apps", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
@@ -132,7 +120,7 @@ func (c *CF) Apps() error {
 }
 
 func (c *CF) App(appName string) error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "app", appName)
+	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "app", appName)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"app", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
@@ -144,7 +132,7 @@ func (c *CF) App(appName string) error {
 }
 
 func (c *CF) Push(appName string) error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", appName, "-p", "dora/")
+	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "push", appName, "-p", "dora/")
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}
@@ -158,7 +146,7 @@ func (c *CF) Push(appName string) error {
 func (c *CF) Delete(appName string) error {
 	c.setStatus(INPUT, "delete")
 	defer c.resetStatus()
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "delete", appName)
+	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "delete", appName)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 
 	stdin, _ := cmd.StdinPipe()

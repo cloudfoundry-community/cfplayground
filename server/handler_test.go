@@ -28,7 +28,7 @@ var _ = Describe("Handler", func() {
 		go func() {
 			http.Serve(listener, nil)
 		}()
-		port = strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
+		// port = strconv.Itoa(listener.Addr().(*net.TCPAddr).Port)
 	})
 
 	AfterEach(func() {

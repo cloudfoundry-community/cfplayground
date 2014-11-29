@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"fmt"
+
 	"github.com/cloudfoundry-community/cfplayground/users"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
 )
@@ -8,7 +10,7 @@ import (
 func CfLogin(user *users.UniqueUser) {
 	err := user.CF.Login()
 	if err != nil {
-
+		fmt.Println("Error: ", err)
 	}
 }
 

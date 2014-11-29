@@ -12,12 +12,12 @@ type Config struct {
 }
 
 type ServerInfo struct {
-	Url   string `json:"url"`
-	Login string `json:"login"`
-	Pass  string `json:"pass"`
-	Org   string `json:"org"`
-	Space string `json:"space"`
-	SkipSSLValidation bool `json:"skip-ssl-validation"` // defaults to false if not present
+	Url               string `json:"url"`
+	Login             string `json:"login"`
+	Pass              string `json:"pass"`
+	Org               string `json:"org"`
+	Space             string `json:"space"`
+	SkipSSLValidation bool   `json:"skip-ssl-validation"` // defaults to false if not present
 }
 
 func New(filePath string) (*Config, error) {
@@ -42,6 +42,6 @@ func New(filePath string) (*Config, error) {
 	} else if configs.Server.Space == "" {
 		return nil, fmt.Errorf("Error: server space is missing")
 	}
-	
+
 	return &configs, nil
 }

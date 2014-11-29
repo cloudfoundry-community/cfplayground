@@ -34,21 +34,28 @@ func NewHandler(basePath string) ServerHandlers {
 
 func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 	pipe, err := websocket.New(w, r)
+
 	if err != nil {
 		panic("Failed to initialize websocket: " + err.Error())
 	}
 
 	token := users.GenerateToken()
 
-	configs := readServerConfig()
+	adminConfigs := readServerConfig()
 
-	newCf := cf.New(
+	userConfigs, err := Admin_CreateNewUser(h.basePath, token, adminConfigs)
+	if err != nil {
+		fmt.Printf("\nFatal Error\n%s\n", err)
+		os.Exit(1)
+	}
+
+	newCf := cf.NewCli(
 		token,
 		pipe.Out,
 		pipe.In,
 		pipe.Prompt,
 		h.basePath,
-		configs,
+		userConfigs,
 	)
 
 	user := users.New(
