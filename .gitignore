@@ -5,3 +5,4 @@ assets/cf
 /config/config.json
 /config/backup-configs
 progress.txt
+/*.sh

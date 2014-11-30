@@ -79,8 +79,6 @@ func (h Handlers) RedirectBase(w http.ResponseWriter, r *http.Request) {
 func (h Handlers) UploadHandler(w http.ResponseWriter, r *http.Request) {
 	token := mux.Vars(r)["token"]
 
-	//os.RemoveAll(path.Join(users.List(token).CF.EnvVar, "app"))
-	//removed dir, now remake it
 	os.MkdirAll(path.Join(users.List(token).CF.EnvVar(), "app"), os.ModePerm)
 
 	//get the multipart reader for the request.

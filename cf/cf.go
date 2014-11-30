@@ -16,6 +16,7 @@ import (
 
 	"github.com/cloudfoundry-community/cfplayground/config"
 	. "github.com/cloudfoundry-community/cfplayground/copy"
+	"github.com/cloudfoundry-community/cfplayground/utils"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
 )
 
@@ -132,7 +133,14 @@ func (c *CF) App(appName string) error {
 }
 
 func (c *CF) Push(appName string) error {
-	cmd := exec.Command(filepath.Join(c.envVar, "pcf"), "push", appName, "-p", "dora/")
+	var cmd *exec.Cmd
+
+	//push user folder if there is one
+	if utils.IsDirExists(filepath.Join(c.envVar, "app")) {
+		cmd = exec.Command(filepath.Join(c.envVar, "pcf"), "push", appName, "-p", "app/")
+	} else {
+		cmd = exec.Command(filepath.Join(c.envVar, "pcf"), "push", appName, "-p", "dora/")
+	}
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}
