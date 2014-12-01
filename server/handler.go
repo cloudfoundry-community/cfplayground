@@ -7,6 +7,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 
 	"github.com/cloudfoundry-community/cfplayground/cf"
 	. "github.com/cloudfoundry-community/cfplayground/commands"
@@ -33,20 +34,35 @@ func NewHandler(basePath string) ServerHandlers {
 }
 
 func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
-	pipe, err := websocket.New(w, r)
+	var userConfigs, adminConfigs *config.Config
+	var err error
+	var user users.UniqueUser
 
+	newUser := false
+
+	pipe, err := websocket.New(w, r)
 	if err != nil {
 		panic("Failed to initialize websocket: " + err.Error())
 	}
 
-	token := users.GenerateToken()
+	adminConfigs = readServerConfig()
 
-	adminConfigs := readServerConfig()
+	token := mux.Vars(r)["token"]
+	if strings.TrimSpace(token) == "" {
+		newUser = true
+	}
 
-	userConfigs, err := Admin_CreateNewUser(h.basePath, token, adminConfigs)
-	if err != nil {
-		fmt.Printf("\nFatal Error\n%s\n", err)
-		os.Exit(1)
+	if newUser {
+		token = users.GenerateToken()
+		userConfigs, err = Admin_CreateNewUser(h.basePath, token, adminConfigs)
+		if err != nil {
+			fmt.Printf("\nFatal Error\n%s\n", err)
+			os.Exit(1)
+		}
+	} else {
+		userConfigs.Server.Login = token
+		userConfigs.Server.Pass = "cfplayground"
+		userConfigs.Server.Space = token
 	}
 
 	newCf := cf.NewCli(
@@ -58,14 +74,20 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 		userConfigs,
 	)
 
-	user := users.New(
-		w,
-		r,
-		h.basePath,
-		token,
-		newCf.(*cf.CF),
-		pipe,
-	)
+	if newUser {
+		user = users.New(
+			h.basePath,
+			token,
+			newCf.(*cf.CF),
+			pipe,
+		)
+	} else {
+		users.RestoreUser(
+			token,
+			newCf.(*cf.CF),
+			pipe,
+		)
+	}
 
 	user.Pipe.Out <- &websocket.Message{"token", "", user.Token}
 	go getConsoleInput(&user)
