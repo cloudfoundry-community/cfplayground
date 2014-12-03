@@ -1,3 +1,10 @@
+/* DEPRECATED
+ * ==========
+ *
+ * this file is not being used anymore
+ *
+*/
+
 var cfTerminal = function(node) {
 
 	var console = $("<div>", {
@@ -28,7 +35,6 @@ var cfTerminal = function(node) {
 
 
 	//add blinker, put it at the bottom of a div, with input textbox position on top
-	// need to see sample on how to resize the input box realtime
 
 	var blinker = $("<span>", {
 		"class": "cli_blinker",

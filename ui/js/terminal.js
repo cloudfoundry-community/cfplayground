@@ -2,11 +2,7 @@ var cfTerminal = function() {
 	var event = new Event('terminal_command');
 	var self = this;
 	self.terminal = $('#terminal').terminal(function(command, term) {
-		// if (command == 'hi') {
-		// 	term.echo('hi You!')
-		// } else {
-		// 	term.trigger("terminal_command", command);
-		// }
+
 	}, {
 		greetings: 'Welcome to Cloud Foundry Playground',
 		name: 'cfplayground',
@@ -14,15 +10,16 @@ var cfTerminal = function() {
 		width: "100%",
 		enabled: false,
 		prompt: "",
-		onFocus: function(term) {
+		//onFocus: function(term) {
 			//workaround of terminal getting focus and enabling input
-			term.focus(false);
-		}
+			//term.focus(false);
+		//}
 	});
 
 	self.cmdLine = $('#cmdLine').cmd({
 		prompt: ' > ',
 		width: '100%',
+		enabled: false,
 		commands: function(command) {
 			self.terminal.trigger("terminal_command", command);
 		}
@@ -30,11 +27,10 @@ var cfTerminal = function() {
 
 	var enabled = function(enable) {
 		if (enable) {
-			//self.terminal.enable()
+			self.cmdLine.enable()
 		} else {
 			self.terminal.echo('hhi, disabling!!')
-			//self.terminal.pause()
-
+			self.terminal.pause()
 		}
 	}
 
@@ -45,8 +41,6 @@ var cfTerminal = function() {
 	var prompt = function(p) {
 		//self.terminal.set_prompt("cloud_foundry > ")
 	}
-
-
 
 	return {
 		echo: this.terminal.echo,
