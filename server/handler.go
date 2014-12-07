@@ -48,7 +48,8 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 	adminConfigs = readServerConfig()
 
 	token := mux.Vars(r)["token"]
-	if strings.TrimSpace(token) == "" {
+
+	if strings.TrimSpace(token) == "undefined" {
 		newUser = true
 	}
 
@@ -60,11 +61,11 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 			os.Exit(1)
 		}
 	} else {
+		userConfigs = adminConfigs
 		userConfigs.Server.Login = token
 		userConfigs.Server.Pass = "cfplayground"
 		userConfigs.Server.Space = token
 	}
-
 	newCf := cf.NewCli(
 		token,
 		pipe.Out,
@@ -72,6 +73,7 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 		pipe.Prompt,
 		h.basePath,
 		userConfigs,
+		newUser,
 	)
 
 	if newUser {
@@ -82,11 +84,15 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 			pipe,
 		)
 	} else {
-		users.RestoreUser(
+		user, err = users.RestoreUser(
 			token,
 			newCf.(*cf.CF),
 			pipe,
 		)
+		if err != nil {
+			fmt.Println("Error restoring user. exiting...")
+			os.Exit(1)
+		}
 	}
 
 	user.Pipe.Out <- &websocket.Message{"token", "", user.Token}
@@ -122,7 +128,7 @@ func (h Handlers) UploadHandler(w http.ResponseWriter, r *http.Request) {
 		if part.FileName() == "" {
 			continue
 		}
-		fmt.Println("file: ", part.FileName())
+
 		dst, err := os.Create(path.Join(users.List(token).CF.EnvVar(), "app", part.FileName()))
 		defer dst.Close()
 

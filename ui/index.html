@@ -18,7 +18,6 @@
 	<script type="text/javascript" src="js/websocket.js"></script>
 	<script type="text/javascript" src="js/terminal.js"></script>
 	
-
 	<title>Cloud Foundry Playground</title>
 </head>
 
@@ -163,7 +162,7 @@
 				<form class="form-inline" role="form">
 				  <div class="form-group">
 				    <input class="form-control" id="inputSessionId" placeholder="Enter session Id">
-					<button type="button" class="btn btn-success" disabled>
+				    <button type="button" class="btn btn-success" onclick="restoreSession();">
 						Submit
 					</button>
 				  </div>
@@ -177,47 +176,60 @@
 </body>
 
 <script>	
-  var cfTerm = new cfTerminal()
-	var cfToken;
-	
-	var ws = new cfWebsocket( cfTerm )
+      var cfTerm = new cfTerminal()
+      var cfToken;
+      
+      var ws = new cfWebsocket( cfTerm )
 
-	$(this).on("terminal_command", function(e, msg) {				
-		ws.send(msg)
-	})
-	
-	$(function () {
-	    $('#fileupload').fileupload({
-	        dataType: 'json',
-	        url: '/upload/',
-	        done: function (e, data) {
-	        	console.log("all file done")
-	            // $.each(data.result.files, function (index, file) {
-	            //     $('<p/>').text(file.name).appendTo(document.body);
-	            // });
-	        }
-	    });
-	});
-
-	$('#fileupload').bind('fileuploaddone', function(e,data){
-		console.log("all files done 2")
-	})
-
-	function newSession() {
-		$("#splashDiv").css("display","none")
-		ws.connect();
-  }
-
-  function deleteUploaded() {
-    if (confirm("Confirm deleting all uploaded files?")) {
-      $.get( "/delete/"+cfToken, function() {
-	alert("All uploaded files have been deleted. 'cf push' will push default app dora")
+      $(this).on("terminal_command", function(e, msg) {				
+	      ws.send(msg)
       })
-      .fail(function() {
-        alert( "There is an error deleting uploaded files" );
+      
+      $(function () {
+	  $('#fileupload').fileupload({
+	      dataType: 'json',
+	      url: '/upload/',
+	      done: function (e, data) {
+		      console.log("all file done")
+		  // $.each(data.result.files, function (index, file) {
+		  //     $('<p/>').text(file.name).appendTo(document.body);
+		  // });
+	      }
+	  });
+      });
+
+      $('#fileupload').bind('fileuploaddone', function(e,data){
+	      console.log("all files done 2")
       })
-    } 
-  }
+
+    function newSession() {
+      $("#splashDiv").css("display","none")
+      ws.connect()
+      cfTerm.enabled(true)
+    }
+
+    function restoreSession() {
+      $("#splashDiv").css("display","none")
+      id = $("#inputSessionId").val()
+
+      if (id =="") {
+	cfTerm.echo("Error: You did not enter a session id")
+      } else {
+	ws.connect(id)
+	cfTerm.enabled(true)
+      }
+    }
+
+    function deleteUploaded() {
+      if (confirm("Confirm deleting all uploaded files?")) {
+	$.get( "/delete/"+cfToken, function() {
+	  alert("All uploaded files have been deleted. 'cf push' will push default app dora")
+	})
+	.fail(function() {
+	  alert( "There is an error deleting uploaded files" );
+	})
+      }
+    }
 
 </script>
 

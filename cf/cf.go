@@ -55,27 +55,28 @@ func (w *msgWriter) Write(b []byte) (n int, err error) {
 	return len(b), nil
 }
 
-func NewCli(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string, configs *config.Config) CLI {
+func NewCli(token string, out chan *websocket.Message, in chan []byte, prompt chan []byte, basePath string, configs *config.Config, createFolder bool) CLI {
 	containerPath := filepath.Join(basePath, "containers")
 	userFolder := filepath.Join(containerPath, token)
 
-	err := os.MkdirAll(filepath.Join(userFolder), os.ModePerm)
-	if err != nil {
-		panic("Cannot create user directory: " + filepath.Join(containerPath, token))
-	}
+	if createFolder {
+		err := os.MkdirAll(filepath.Join(userFolder), os.ModePerm)
+		if err != nil {
+			panic("Cannot create user directory: " + filepath.Join(containerPath, token))
+		}
 
-	err = CopyFile(filepath.Join(basePath, "assets/cf/", "pcf"), filepath.Join(userFolder, "pcf"))
-	if err != nil {
-		panic("Cannot copy cf binary to user directory: " + filepath.Join(userFolder))
-	}
+		err = CopyFile(filepath.Join(basePath, "assets/cf/", "pcf"), filepath.Join(userFolder, "pcf"))
+		if err != nil {
+			panic("Cannot copy cf binary to user directory: " + filepath.Join(userFolder))
+		}
 
-	err = CopyDir(filepath.Join(basePath, "assets", "dora"), filepath.Join(userFolder, "dora"))
-	if err != nil {
-		panic("Cannot copy default CF App to user directory: " + filepath.Join(userFolder, "app"))
+		err = CopyDir(filepath.Join(basePath, "assets", "dora"), filepath.Join(userFolder, "dora"))
+		if err != nil {
+			panic("Cannot copy default CF App to user directory: " + filepath.Join(userFolder, "app"))
+		}
 	}
 
 	absPath, _ := filepath.Abs(userFolder)
-
 	return &CF{
 		absPath,
 		StatusType{WAITING, ""},

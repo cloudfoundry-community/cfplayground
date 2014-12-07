@@ -30,8 +30,8 @@ func RegisterHandler(h ServerHandlers) {
 	r.Methods("GET").Path("/").HandlerFunc(h.RedirectBase)
 	r.Methods("POST").Path("/upload/{token}").HandlerFunc(h.UploadHandler)
 	r.Methods("GET").Path("/delete/{token}").HandlerFunc(h.DeleteHandler)
+	r.Methods("GET").Path("/ws/{token}").HandlerFunc(h.InitSession)
 
-	http.HandleFunc("/ws", h.InitSession)
 	http.Handle("/ui/", http.StripPrefix("/ui/", http.FileServer(http.Dir(path.Join(h.BasePath(), "ui")))))
 	http.Handle("/", r)
 }

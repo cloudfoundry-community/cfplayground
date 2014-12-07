@@ -1,11 +1,18 @@
 var wsport = 8080;
 var wsIP = "localhost";
+// var wsIP="67.174.151.1";
+// var wsIP="macpro.simonleung.info";
 
 var cfWebsocket = function(cfTerm) {
 	var wskt = WebSocket;
-	var connect = function() {
+
+	var connect = function(session) {
 		try {
-			wskt = new WebSocket("ws://" + wsIP + ":" + wsport + "/ws");
+			if (session == "" ) {
+				wskt = new WebSocket("ws://" + wsIP + ":" + wsport + "/ws");
+			} else {
+				wskt = new WebSocket("ws://" + wsIP + ":" + wsport + "/ws/" + session);
+			}
 
 			wskt.onopen = function() {
 				writeToTerminal("Connected to " + wsIP + ":" + wsport, "system", "");
@@ -15,10 +22,15 @@ var cfWebsocket = function(cfTerm) {
 				processOutput($.parseJSON(status.data));
 			};
 
-			wskt.onclose = function() {
-				writeToTerminal('Disconnected from server', "warning", "");
+			wskt.onclose = function(e) {
+				writeToTerminal('Disconnected from server: '+ e.code, "warning", "");
 				//$('#progressBar').css("display", "none");
 			};
+
+			wskt.onerror = function(e) {
+				writeToTerminal('Error connecting to server: '+ e, "warning", "");
+			};
+
 		} catch (err) {
 			output('error in connect module: ' + err);
 		}
