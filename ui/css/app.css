@@ -3,27 +3,81 @@ html, body {
 	height:100%;
 }
 
+body {
+	position: relative;
+	padding-top:50px;
+}
+
+/*navigation bar*/
+.navbar.navbar-fixed-top {
+	border-bottom-width: 5px;
+	border-bottom-color: #CC5F39;
+}
+
+.navbar .navbar-brand {
+	cursor: pointer;
+	cursor: hand;
+}
+
+.navbar.navbar-fixed-bottom {
+	border-top-width: 5px;
+	border-top-color: #CC5F39;
+}
+
 #appContainer {
 	position: absolute;
-	bottom: 55px;
+	bottom: 50px;
 	top: 55px;
-	right: 0; 
+	right: 0;
 	left: 0;
-	background: #282828;	
+	background: #282828;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 #terminalWrapper {
 	position: relative;
-	padding:  0 20px 35px ;
+	padding: 10px 20px 35px 10px;
 	height: 100%;
+	float: left;
+	width: 65%;
+}
+
+.tutorial {
+	float: right;
+	width: 35%;
+	height: 100%;
+	padding: 20px;
+	position:relative;
+}
+
+.tutorial .tutorial-content {
+	height: 100%;
+	background: #838271;
+	color: #ddd;
+}
+
+.tutorial .tutorial-content #tutorialTitle {
+	font-size: 1.3em;
+	font-weight: bold;
+	text-align: center;
+}
+
+.tutorial .tutorial-content a {
+	border: none;
+}
+
+.tutorial .tutorial-content a img {
+	position: absolute;
+	bottom: 30px;
+	right: 30px;
+	width: 130px
 }
 
 #consoleWrapper {
-	width: 100%;	
+	width: 100%;
 	height: 100%;
-	padding: 0;		
+	padding: 0;
 }
 
 #consoleWrapper .intro {
@@ -34,22 +88,86 @@ html, body {
 	width: 100%;
 	overflow: hidden;
 	margin: auto;
-	padding:0;	
+	padding:0;
 	background: #111;
 }
 
-#splashDiv {
-	position: absolute;	
+/*Splash screen*/
+#splash {
+	position: absolute;
 	top: 0; bottom: 0; left: 0; right: 0;
 	background: rgba(255,255,255,.5);
-	z-index: 0	
+	z-index: 0;
+	padding-top: 100px;
+}
+
+#splash .splash-content {
+	margin: auto;
+	width: 600px;
+	height: 350px;
+	text-align: center;
+}
+
+#splash .splash-content .new-session {
+	float: left;
+	width: 40%;
+	height: 150px;
+	line-height: 130px;
+	border-right: 2px solid #bbb;
+}
+
+#splash .splash-content .restore-session {
+	float: right;
+	width: 59%;
+	height: 150px;
+	line-height: 130px;
 }
 
 .letterpress {
-	color:#555;
+	color: #555;
 	text-shadow: 0 1px 0 #fff;
 }
 .letterpress-white {
-	color:#eee;
+	color: #eee;
 	text-shadow: 0 -1px 0 #555;
+}
+
+#cfMenu .separated-at-right {
+	border-right: 2px solid #bbb;
+}
+
+#cfMenu .upload-app {
+	float: left;
+	width: 250px;
+	text-align: center;
+	padding: 10px 10px 0 10px;
+}
+
+#cfMenu .upload-app .droparea {
+	width: 150px;
+	height: 150px;
+	margin: 10px auto;
+	border: 1px #888 dashed;
+	background: #eee;
+	padding-top: 45px;
+}
+
+#cfMenu .file-control {
+	float: left;
+	width: 30%;
+	text-align: center;
+	padding: 10px;
+	height: 210px;
+}
+
+#cfMenu .file-control h4 {
+	margin-bottom: 15px;
+}
+
+#cfMenu .modal-footer #divSessionId {
+	float: left;
+}
+
+#cfMenu .modal-footer button {
+	float: right;
 }
