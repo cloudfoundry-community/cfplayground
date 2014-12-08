@@ -52,7 +52,7 @@ func (c *CfAdmin) CreateUser(newUser string) error {
 	c.setStatus(ADMIN, "createUser")
 	defer c.resetStatus()
 
-	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "create-user", newUser, "cfplayground")
+	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "create-user", newUser, c.configs.Server.Org)
 
 	err := cmd.Start()
 	if err != nil {
@@ -66,7 +66,7 @@ func (c *CfAdmin) AssignUserRole(user, space string) error {
 	c.setStatus(ADMIN, "assignUserRole")
 	defer c.resetStatus()
 
-	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "set-space-role", user, "cf-playground", space, "SpaceDeveloper")
+	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "set-space-role", user, c.configs.Server.Org, space, "SpaceDeveloper")
 
 	err := cmd.Start()
 	if err != nil {
