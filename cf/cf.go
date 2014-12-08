@@ -102,7 +102,7 @@ func (c *CF) Login() error {
 	cmd.Stdout = &msgWriter{"login", "stdout", c.out}
 
 	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf login: ", err)
+		fmt.Errorf("Error running cf login: %s", err.Error())
 	}
 
 	cmd.Wait()
@@ -114,7 +114,7 @@ func (c *CF) Apps() error {
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"apps", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf apps: ", err)
+		fmt.Errorf("Error running cf apps: %s", err.Error())
 	}
 
 	cmd.Wait()
@@ -126,7 +126,7 @@ func (c *CF) App(appName string) error {
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"app", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf apps: ", err)
+		fmt.Errorf("Error running cf apps: %s", err.Error())
 	}
 
 	cmd.Wait()
@@ -146,7 +146,7 @@ func (c *CF) Push(appName string) error {
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf push: ", err)
+		fmt.Errorf("Error running cf push: %s", err.Error())
 	}
 	cmd.Wait()
 	return nil
@@ -162,7 +162,7 @@ func (c *CF) Delete(appName string) error {
 	cmd.Stdout = &msgWriter{"delete", "stdout", c.out}
 
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("Error in cf delete: ", err)
+		return fmt.Errorf("Error in cf delete: %s", err.Error())
 	}
 
 	var msg []byte
