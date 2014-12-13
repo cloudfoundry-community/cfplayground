@@ -46,6 +46,7 @@ func RestoreUser(token string, cli cf.CLI, pipe *websocket.Pipe) (UniqueUser, er
 	if user, ok := userList[token]; ok {
 		user.CF = cli
 		user.Pipe = pipe
+		user.LastConnect = time.Now()
 		return user, nil
 	}
 
