@@ -2,6 +2,7 @@ package users
 
 import (
 	"fmt"
+	"io/ioutil"
 	"path"
 	"time"
 
@@ -26,6 +27,20 @@ var userList map[string]UniqueUser
 
 func init() {
 	userList = make(map[string]UniqueUser)
+
+	files, _ := ioutil.ReadDir("../containers")
+	for _, f := range files {
+		if f.IsDir() {
+			userList[f.Name()] = UniqueUser{
+				Token:       f.Name(),
+				LastConnect: time.Now(),
+			}
+		}
+	}
+}
+
+func GetAllUsers() map[string]UniqueUser {
+	return userList
 }
 
 func New(basePath, token string, cli cf.CLI, pipe *websocket.Pipe) UniqueUser {
