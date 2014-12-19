@@ -63,7 +63,7 @@ func (h Handlers) InitSession(w http.ResponseWriter, r *http.Request) {
 	} else {
 		userConfigs = adminConfigs
 		userConfigs.Server.Login = token
-		userConfigs.Server.Pass = "cfplayground"
+		userConfigs.Server.Pass = "password"
 		userConfigs.Server.Space = token
 	}
 	newCf := cf.NewCli(

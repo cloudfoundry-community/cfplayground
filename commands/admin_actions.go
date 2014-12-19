@@ -41,7 +41,7 @@ func Admin_CreateNewUser(basePath string, token string, configs *config.Config) 
 
 	// send new user info if all actions are successful
 	configs.Server.Login = token
-	configs.Server.Pass = "cfplayground"
+	configs.Server.Pass = "password"
 	configs.Server.Space = token
 
 	return configs, nil

@@ -52,7 +52,7 @@ func (c *CfAdmin) CreateUser(newUser string) error {
 	c.setStatus(ADMIN, "createUser")
 	defer c.resetStatus()
 
-	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "create-user", newUser, c.configs.Server.Org)
+	cmd := exec.Command(filepath.Join(basePath, "assets/cf/", "pcf"), "create-user", newUser, "password")
 
 	err := cmd.Start()
 	if err != nil {
