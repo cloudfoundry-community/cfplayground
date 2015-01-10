@@ -36,9 +36,9 @@ You will need to host your own Cloud Foundry environment (bosh-lite or any full 
 Limitation
 ==========
 - No Windows support (coming soon)
-- Arbitrary app pushing (work in progress)
+- Arbitrary app pushing (functioning, improvement to be made)
 - Temp user account/space clean up (work in progress)
-- Restore user session (work in progress)
+- Restore user session (functioning, improvement to be made)
 - The supported CF commands are:
     - cf push
     - cf apps
