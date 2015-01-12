@@ -1,0 +1,10 @@
+{
+  "server": {
+    "url": "api.10.244.0.34.xip.io",
+    "login": "admin",
+    "pass": "admin",
+    "org": "cf-playground",
+    "space": "dev",
+    "skip-ssl-validation": true
+  }
+}

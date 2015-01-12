@@ -157,7 +157,16 @@ func (h Handlers) BasePath() string {
 }
 
 func readServerConfig() *config.Config {
-	configs, err := config.New("./config/config.json")
+	var configs *config.Config
+	var err error
+
+	_, err = os.Stat("./config/config.json")
+	if err == nil || os.IsExist(err) {
+		configs, err = config.New("./config/config.json")
+	} else {
+		configs, err = config.New("./config/boshlite_config.json")
+	}
+
 	if err != nil {
 		panic("Failed to read config file " + err.Error())
 	}
