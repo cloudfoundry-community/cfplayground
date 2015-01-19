@@ -26,6 +26,8 @@ You will need to host your own Cloud Foundry environment (bosh-lite or any full 
   *(Ignore any warnings about "no buildable Go source files")
   
 4) Create a config file `config.json` under `config/` with the info of your Cloud Foundry environment, a sample config file is provided for reference `config/sameple_config.json`
+
+_*_ if no `config.json` is found, `boshlite_config.json` will be used to target a local boshlite environment.
   
 5) Run CF Playground
 
