@@ -14,10 +14,13 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
-
+	"math/rand"
+	"time"
+	"strconv"
 	"github.com/cloudfoundry-community/cfplayground/config"
 	. "github.com/cloudfoundry-community/cfplayground/copy"
 	"github.com/cloudfoundry-community/cfplayground/websocket"
+	"syscall"
 )
 
 const (
@@ -29,12 +32,16 @@ const (
 type CLI interface {
 	Login() error
 	Apps() error
+	Buildpacks() error
 	App(string) error
-	Push() error
+	Push(string, string, string, int, string) error
 	Delete(string) error
 	Output(websocket.Message)
 	EnvVar() string
 	Status() StatusType
+	Help(string) error
+	Scale(string, string, int, string) error
+	Logs(string, bool) error
 }
 
 type CF struct {
@@ -80,7 +87,7 @@ func New(token string, out chan *websocket.Message, in chan []byte, prompt chan 
 		panic("Cannot copy cf binary to user directory: " + path.Join(userFolder))
 	}
 
-	err = CopyDir(path.Join(basePath, "assets", "dora"), path.Join(userFolder, "dora"))
+	err = CopyDir(path.Join(basePath, "assets", "defaultapp"), path.Join(userFolder, "defaultapp"))
 	if err != nil {
 		panic("Cannot copy default CF App to user directory: " + path.Join(userFolder, "app"))
 	}
@@ -123,6 +130,36 @@ func (c *CF) Apps() error {
 	return nil
 }
 
+func (c *CF) Buildpacks() error {
+	cmd := exec.Command(path.Join(c.envVar, "pcf"), "buildpacks")
+	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
+	cmd.Stdout = &msgWriter{"buildpacks", "stdout", c.out}
+	if err := cmd.Start(); err != nil {
+		fmt.Errorf("Error running cf buildpacks: ", err)
+	}
+
+	cmd.Wait()
+	return nil
+}
+
+func (c *CF) Help(commandName string) error {
+	var cmd *exec.Cmd;
+	if commandName != "" {
+		cmd = exec.Command(path.Join(c.envVar, "pcf"), "help", commandName)
+	}else {
+		cmd = exec.Command(path.Join(c.envVar, "pcf"), "help")
+	}
+
+	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
+	cmd.Stdout = &msgWriter{"help", "stdout", c.out}
+	if err := cmd.Start(); err != nil {
+		fmt.Errorf("Error running cf help: ", err)
+	}
+
+	cmd.Wait()
+	return nil
+}
+
 func (c *CF) App(appName string) error {
 	cmd := exec.Command(path.Join(c.envVar, "pcf"), "app", appName)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
@@ -135,14 +172,72 @@ func (c *CF) App(appName string) error {
 	return nil
 }
 
-func (c *CF) Push() error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", "userApp1332", "-p", "dora/")
+func (c *CF) Logs(appName string, recent bool) error {
+	c.setStatus(INPUT, "scale")
+	defer c.resetStatus()
+	var cmd *exec.Cmd;
+	if (recent) {
+		cmd = exec.Command(path.Join(c.envVar, "pcf"), "logs", appName, "--recent")
+	}else {
+		cmd = exec.Command(path.Join(c.envVar, "pcf"), "logs", appName)
+
+		var msg []byte
+		go func() {
+			msgW := &msgWriter{"scale", "stdout", c.out}
+			for {
+				msg = <-c.prompt
+				cmd.Process.Signal(syscall.SIGINT)
+				msgW.Write(msg)
+			}
+		}()
+	}
+	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
+	cmd.Stdout = &msgWriter{"logs", "stdout", c.out}
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("Error running cf logs: ", err)
+	}
+
+	cmd.Wait()
+	return nil
+}
+
+func (c *CF) Push(appName string, pathApp string, memory string, numberInstance int, diskLimit string) error {
+	rand.Seed(time.Now().UnixNano())
+	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", appName, "-p", pathApp, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}
 	if err := cmd.Start(); err != nil {
 		fmt.Errorf("Error running cf push: ", err)
 	}
+	cmd.Wait()
+	return nil
+}
+
+func (c *CF) Scale(appName string, memory string, numberInstance int, diskLimit string) error {
+	c.setStatus(INPUT, "scale")
+	defer c.resetStatus()
+	cmd := exec.Command(path.Join(c.envVar, "pcf"), "scale", appName, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
+	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
+
+	stdin, _ := cmd.StdinPipe()
+
+	cmd.Stdout = &msgWriter{"scale", "stdout", c.out}
+
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("Error running cf scale: ", err)
+	}
+
+	var msg []byte
+	go func() {
+		msgW := &msgWriter{"scale", "stdout", c.out}
+		for {
+			msg = <-c.prompt
+			io.WriteString(stdin, string(msg)+"\n")
+			msgW.Write(msg)
+		}
+	}()
+
 	cmd.Wait()
 	return nil
 }

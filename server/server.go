@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"path"
 	"strings"
-
 	"github.com/cloudfoundry-community/cfplayground/cf"
 	. "github.com/cloudfoundry-community/cfplayground/commands"
 	"github.com/cloudfoundry-community/cfplayground/users"
@@ -23,6 +22,16 @@ import (
 var Port string = "8080"
 var Url string = "localhost"
 var WebSocketPort string = "8080"
+var mapsCommands = map[string]interface{}{
+	"apps": CfApps,
+	"a": CfApps,
+	"push": CfPush,
+	"scale": CfScale,
+	"buildpacks": CfBuildpacks,
+	"delete": CfDelete,
+	"d": CfDelete,
+	"logs": CfLogs,
+	"help": CfHelp}
 
 type Server interface {
 	Serve(h ServerHandlers)
@@ -75,21 +84,33 @@ func getConsoleInput(user *users.UniqueUser) {
 }
 
 func processConsoleInput(user *users.UniqueUser, message string) {
-	if message == "cf apps" {
-		CfApps(user)
-	} else if strings.HasPrefix(message, "cf app ") {
-		CfApp(user, strings.Trim(message[7:], " "))
-	} else if message == "cf push" {
-		CfPush(user)
-	} else if strings.HasPrefix(message, "cf delete ") {
-		CfDelete(user, strings.Trim(message[10:], " "))
-	} else if strings.HasPrefix(message, "[course]") {
+
+	if strings.Fields(message)[0] == "cf" {
+		funcName := strings.Fields(message)[1];
+		if _, ok := mapsCommands[funcName]; ok {
+			err := mapsCommands[funcName].(func(*users.UniqueUser, string) error)(user, message)
+			if err == nil {
+				return
+			}
+		}
+	}else if strings.HasPrefix(message, "[course]") {
 		RunCourse(user, message[8:])
-	} else {
-		user.CF.Output(websocket.Message{"echo", "warning", message + " is not a valid command"})
+		return
 	}
 
 	if user.Tutorials.InProgress() && !strings.HasPrefix(message, "[course]") {
 		ProgressCourse(user, message)
+		return
 	}
+	splittedMessage := strings.Fields(message)
+	if splittedMessage[0] == "cf" && len(splittedMessage) >= 2 {
+		user.CF.Output(websocket.Message{"echo", "warning", message + " is not a valid command, running cf help for 'cf " + splittedMessage[1] + "'"})
+		CfHelp(user, "cf help "+splittedMessage[1])
+	}else if splittedMessage[0] == "cf" {
+		user.CF.Output(websocket.Message{"echo", "warning", message + " is not a valid command, running cf help"})
+		CfHelp(user, "cf help")
+	}else {
+		user.CF.Output(websocket.Message{"echo", "warning", message + " is not a valid command"})
+	}
+
 }
