@@ -40,10 +40,14 @@ Limitation
 - Temp user account/space clean up (work in progress)
 - Restore user session (work in progress)
 - The supported CF commands are:
-    - cf push
+    - cf push {app name} [-i NUM_INSTANCES] [-k DISK] [-m MEMORY] [-p PATH]
     - cf apps
     - cf app {app name}
     - cf delete {app name}
+    - cf buildpacks
+    - cf help [COMMAND]
+    - cf scale {app name} [-i NUM_INSTANCES] [-k DISK] [-m MEMORY]
+    - cf logs {app name} [--recent]
 
 
 
