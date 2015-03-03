@@ -33,7 +33,13 @@ type CLI interface {
 	Login() error
 	Apps() error
 	Buildpacks() error
+	Marketplace() error
+	Services() error
+	Files(string, string) error
+	BindService(string, string) error
+	UnBindService(string, string) error
 	App(string) error
+	Env(string) error
 	Push(string, string, string, int, string) error
 	Delete(string) error
 	Output(websocket.Message)
@@ -42,10 +48,20 @@ type CLI interface {
 	Help(string) error
 	Scale(string, string, int, string) error
 	Logs(string, bool) error
+	Start(string) error
+	Stop(string) error
+	Restage(string) error
+	Restart(string) error
+	DeleteService(string) error
+	Domains() error
+	CreateUserProvidedService(string, string) error
+	MapRoute(string, string, string) error
+	UnMapRoute(string, string, string) error
 }
 
 type CF struct {
 	envVar  string
+	cfPath  string
 	status  StatusType
 	out     chan *websocket.Message
 	in      chan []byte
@@ -82,31 +98,38 @@ func New(token string, out chan *websocket.Message, in chan []byte, prompt chan 
 		panic("Cannot create user directory: " + path.Join(containerPath, token))
 	}
 
-	err = CopyFile(path.Join(basePath, "assets/cf/", "pcf"), path.Join(userFolder, "pcf"))
-	if err != nil {
-		panic("Cannot copy cf binary to user directory: " + path.Join(userFolder))
-	}
-
 	err = CopyDir(path.Join(basePath, "assets", "defaultapp"), path.Join(userFolder, "defaultapp"))
 	if err != nil {
 		panic("Cannot copy default CF App to user directory: " + path.Join(userFolder, "app"))
 	}
 
 	absPath, _ := filepath.Abs(userFolder)
+	absCfPath, _ := filepath.Abs(path.Join(basePath, "assets/cf/"))
 	configs, err := config.New("./config/config.json")
 
 	if err != nil {
 		panic("Failed to read config file " + err.Error())
 	}
 
-	return &CF{absPath, StatusType{WAITING, ""}, out, in, prompt, configs}
+	return &CF{absPath, absCfPath, StatusType{WAITING, ""}, out, in, prompt, configs}
 }
 
+func (c *CF) ShowCommand(args ... string) error {
+	cmd := exec.Command(path.Join(c.cfPath, "pcf"), args...)
+	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
+	cmd.Stdout = &msgWriter{args[0], "stdout", c.out}
+	if err := cmd.Start(); err != nil {
+		fmt.Errorf("Error running cf apps: ", err)
+	}
+
+	cmd.Wait()
+	return nil
+}
 func (c *CF) Login() error {
 	c.setStatus(COMMAND, "login")
 	defer c.resetStatus()
 	fmt.Println("login1: ", c.status.Job, " ", c.status.Detail)
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "login", "-a", c.configs.Server.Url, "-u", c.configs.Server.Login, "-p", c.configs.Server.Pass, "-o", c.configs.Server.Org, "-s", c.configs.Server.Space, "--skip-ssl-validation")
+	cmd := exec.Command(path.Join(c.cfPath, "pcf"), "login", "-a", c.configs.Server.Url, "-u", c.configs.Server.Login, "-p", c.configs.Server.Pass, "-o", c.configs.Server.Org, "-s", c.configs.Server.Space, "--skip-ssl-validation")
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Stdout = &msgWriter{"login", "stdout", c.out}
 
@@ -119,68 +142,79 @@ func (c *CF) Login() error {
 }
 
 func (c *CF) Apps() error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "apps")
-	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
-	cmd.Stdout = &msgWriter{"apps", "stdout", c.out}
-	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf apps: ", err)
-	}
-
-	cmd.Wait()
-	return nil
+	return c.ShowCommand("apps")
 }
 
+func (c *CF) Services() error {
+	return c.ShowCommand("services")
+}
+func (c *CF) Files(appName string, pathFile string) error {
+	if pathFile != "" {
+		return c.ShowCommand("files", appName, pathFile)
+	}
+	return c.ShowCommand("files", appName)
+}
+func (c *CF) BindService(appName string, serviceName string) error {
+	return c.ShowCommand("bind-service", appName, serviceName)
+}
+func (c *CF) UnBindService(appName string, serviceName string) error {
+	return c.ShowCommand("unbind-service", appName, serviceName)
+}
 func (c *CF) Buildpacks() error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "buildpacks")
-	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
-	cmd.Stdout = &msgWriter{"buildpacks", "stdout", c.out}
-	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf buildpacks: ", err)
-	}
-
-	cmd.Wait()
-	return nil
+	return c.ShowCommand("buildpacks")
 }
-
+func (c *CF) Domains() error {
+	return c.ShowCommand("domains")
+}
+func (c *CF) Marketplace() error {
+	return c.ShowCommand("marketplace")
+}
+func (c *CF) CreateUserProvidedService(serviceName string, credentials string) error {
+	return c.ShowCommand("cups", serviceName, "-p", credentials)
+}
 func (c *CF) Help(commandName string) error {
-	var cmd *exec.Cmd;
 	if commandName != "" {
-		cmd = exec.Command(path.Join(c.envVar, "pcf"), "help", commandName)
-	}else {
-		cmd = exec.Command(path.Join(c.envVar, "pcf"), "help")
+		return c.ShowCommand("help", commandName)
 	}
-
-	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
-	cmd.Stdout = &msgWriter{"help", "stdout", c.out}
-	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf help: ", err)
-	}
-
-	cmd.Wait()
-	return nil
+	return c.ShowCommand("help")
 }
 
 func (c *CF) App(appName string) error {
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "app", appName)
-	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
-	cmd.Stdout = &msgWriter{"app", "stdout", c.out}
-	if err := cmd.Start(); err != nil {
-		fmt.Errorf("Error running cf apps: ", err)
-	}
-
-	cmd.Wait()
-	return nil
+	return c.ShowCommand("app", appName)
 }
-
+func (c *CF) Start(appName string) error {
+	return c.ShowCommand("start", appName)
+}
+func (c *CF) Stop(appName string) error {
+	return c.ShowCommand("stop", appName)
+}
+func (c *CF) Restage(appName string) error {
+	return c.ShowCommand("restage", appName)
+}
+func (c *CF) Restart(appName string) error {
+	return c.ShowCommand("restart", appName)
+}
+func (c *CF) Env(appName string) error {
+	return c.ShowCommand("env", appName)
+}
+func (c *CF) DeleteService(serviceName string) error {
+	return c.ShowCommand("delete-service", serviceName, "-f")
+}
+func (c *CF) MapRoute(appName string, domain string, hostname string) error {
+	return c.ShowCommand("map-route", appName, domain, "-n", hostname)
+}
+func (c *CF) UnMapRoute(appName string, domain string, hostname string) error {
+	return c.ShowCommand("unmap-route", appName, domain, "-n", hostname)
+}
 func (c *CF) Logs(appName string, recent bool) error {
 	c.setStatus(INPUT, "scale")
 	defer c.resetStatus()
 	var cmd *exec.Cmd;
 	if (recent) {
-		cmd = exec.Command(path.Join(c.envVar, "pcf"), "logs", appName, "--recent")
+		cmd = exec.Command(path.Join(c.cfPath, "pcf"), "logs", appName, "--recent")
 	}else {
-		cmd = exec.Command(path.Join(c.envVar, "pcf"), "logs", appName)
-
+		cmd = exec.Command(path.Join(c.cfPath, "pcf"), "logs", appName)
+		//when tail we need to send a signal to the cli to exit the tailing.
 		var msg []byte
 		go func() {
 			msgW := &msgWriter{"scale", "stdout", c.out}
@@ -203,7 +237,7 @@ func (c *CF) Logs(appName string, recent bool) error {
 
 func (c *CF) Push(appName string, pathApp string, memory string, numberInstance int, diskLimit string) error {
 	rand.Seed(time.Now().UnixNano())
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "push", appName, "-p", pathApp, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
+	cmd := exec.Command(path.Join(c.cfPath, "pcf"), "push", appName, "-p", pathApp, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 	cmd.Dir = c.envVar
 	cmd.Stdout = &msgWriter{"push", "stdout", c.out}
@@ -217,7 +251,7 @@ func (c *CF) Push(appName string, pathApp string, memory string, numberInstance 
 func (c *CF) Scale(appName string, memory string, numberInstance int, diskLimit string) error {
 	c.setStatus(INPUT, "scale")
 	defer c.resetStatus()
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "scale", appName, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
+	cmd := exec.Command(path.Join(c.cfPath, "pcf"), "scale", appName, "-m", memory, "-i", strconv.Itoa(numberInstance), "-k", diskLimit)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 
 	stdin, _ := cmd.StdinPipe()
@@ -245,7 +279,7 @@ func (c *CF) Scale(appName string, memory string, numberInstance int, diskLimit 
 func (c *CF) Delete(appName string) error {
 	c.setStatus(INPUT, "delete")
 	defer c.resetStatus()
-	cmd := exec.Command(path.Join(c.envVar, "pcf"), "delete", appName)
+	cmd := exec.Command(path.Join(c.cfPath, "pcf"), "delete", appName)
 	cmd.Env = append(cmd.Env, "CF_HOME="+c.envVar, "CF_COLOR=true")
 
 	stdin, _ := cmd.StdinPipe()

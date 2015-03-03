@@ -32,6 +32,15 @@ func CfApps(user *users.UniqueUser, message string) error {
 	return nil
 }
 
+func CfMarketplace(user *users.UniqueUser, message string) error {
+	user.CF.Output(websocket.Message{"echo", "input", message})
+	err := user.CF.Marketplace()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func CfApp(user *users.UniqueUser, message string) error {
 	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
 
@@ -45,7 +54,131 @@ func CfApp(user *users.UniqueUser, message string) error {
 	}
 	return nil
 }
+func CfStop(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
 
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.Stop(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfStart(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.Start(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfRestart(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.Restart(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfRestage(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.Restage(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfDeleteService(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.DeleteService(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfEnv(user *users.UniqueUser, message string) error {
+	user.CF.Output(websocket.Message{"echo", "input", message})
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+
+	err := user.CF.Env(strings.Fields(message)[2])
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfFiles(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+	var err error;
+	if len(strings.Fields(message)) < 4 {
+		err = user.CF.Files(strings.Fields(message)[2], "")
+	}else {
+		err = user.CF.Files(strings.Fields(message)[2], strings.Fields(message)[3])
+	}
+
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+
+func CfBindService(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 4 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+	fieldsCommand := strings.Fields(message)
+	err := user.CF.BindService(fieldsCommand[2], fieldsCommand[3])
+
+	if err != nil {
+		return err;
+	}
+	return nil
+}
+func CfUnBindService(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+
+	if len(strings.Fields(message)) < 4 {
+		return fmt.Errorf("command not valid missing appname")
+	}
+	fieldsCommand := strings.Fields(message)
+	err := user.CF.UnBindService(fieldsCommand[2], fieldsCommand[3])
+
+	if err != nil {
+		return err;
+	}
+	return nil
+}
 func CfHelp(user *users.UniqueUser, message string) error {
 
 	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
@@ -128,6 +261,67 @@ func CfPush(user *users.UniqueUser, message string) error {
 	return nil
 }
 
+func CfCreateUserProvidedService(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+	var CommandLine = flag.NewFlagSet("push", flag.ContinueOnError)
+	var credentials string
+	if len(strings.Fields(message)) < 3 {
+		return fmt.Errorf("command not valid missing serviceName")
+	}
+	CommandLine.StringVar(&credentials, "p", "", "credentials")
+	CommandLine.Parse(strings.Fields(message)[3:])
+
+	if credentials == "" {
+		return fmt.Errorf("command not valid missing credentials (option -p)")
+	}
+
+	err := user.CF.CreateUserProvidedService(strings.Fields(message)[2], credentials)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func CfMapRoute(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+	var CommandLine = flag.NewFlagSet("push", flag.ContinueOnError)
+	var hostname string
+	arguments := strings.Fields(message)
+	if len(arguments) < 3 {
+		return fmt.Errorf("command not valid missing appName")
+	}
+	if len(arguments) < 4 {
+		return fmt.Errorf("command not valid missing domain")
+	}
+	CommandLine.StringVar(&hostname, "n", arguments[2], "hostname")
+	CommandLine.Parse(strings.Fields(message)[4:])
+
+	err := user.CF.MapRoute(arguments[2], arguments[3], hostname)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func CfUnMapRoute(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+	var CommandLine = flag.NewFlagSet("push", flag.ContinueOnError)
+	var hostname string
+	arguments := strings.Fields(message)
+	if len(arguments) < 3 {
+		return fmt.Errorf("command not valid missing appName")
+	}
+	if len(arguments) < 4 {
+		return fmt.Errorf("command not valid missing domain")
+	}
+	CommandLine.StringVar(&hostname, "n", arguments[2], "hostname")
+	CommandLine.Parse(strings.Fields(message)[4:])
+
+	err := user.CF.UnMapRoute(arguments[2], arguments[3], hostname)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 func CfScale(user *users.UniqueUser, message string) error {
 	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
 	var CommandLine = flag.NewFlagSet("scale", flag.ContinueOnError)
@@ -160,6 +354,25 @@ func CfBuildpacks(user *users.UniqueUser, message string) error {
 	}
 	return nil
 }
+func CfDomains(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+	//scan, err := user.CF.Login()
+	//user.Pipe.Conn.WriteMessage(websocket.TextMessage, []byte("[start]"))
+	err := user.CF.Domains()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func CfServices(user *users.UniqueUser, message string) error {
+	user.Pipe.Out <- &websocket.Message{"echo", "input", message}
+	err := user.CF.Services()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func RunCourse(user *users.UniqueUser, cName string) {
 	if user.Tutorials.InProgress() {
 		user.Pipe.Out <- &websocket.Message{"echo", "warning", "Another Course is currently in progress, you can choose to terminal this course in the dropdown menu"}
