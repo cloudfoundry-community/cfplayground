@@ -1,9 +1,10 @@
 {
-  "server": {
-    "url": "https://api.10.244.0.34.xip.io",
-    "login": "admin",
-    "pass": "admin",
-    "org": "cfplayground",
-    "space": "test"
-  }
+    "server": {
+        "url": "https://api.run.pivotal.io",
+        "login": "",
+        "pass": "",
+        "org": "",
+        "space": "",
+        "skip-ssl-validation": true
+    }
 }

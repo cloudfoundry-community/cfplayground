@@ -40,10 +40,29 @@ Limitation
 - Temp user account/space clean up (work in progress)
 - Restore user session (work in progress)
 - The supported CF commands are:
-    - cf push
+    - cf push {app name} [-i NUM_INSTANCES] [-k DISK] [-m MEMORY] [-p PATH]
     - cf apps
     - cf app {app name}
     - cf delete {app name}
+    - cf buildpacks
+    - cf help [COMMAND]
+    - cf scale {app name} [-i NUM_INSTANCES] [-k DISK] [-m MEMORY]
+    - cf logs {app name} [--recent]
+    - cf stop {app name}
+    - cf start {app name}
+    - cf restart {app name}
+    - cf restage {app name}
+    - cf services
+    - cf domains
+    - cf bind-service {service name} {app name}
+    - cf unbind-service {service name} {app name}
+    - cf delete-service {service name}
+    - cf create-user-provided-service {service name} [-p CREDENTIALS]
+    - cf marketplace
+    - cf files {app name} [PATH]
+    - cf env {app name}
+    - cf map-route {app name} {domain} [-n HOSTNAME]
+    - cf unmap-route {app name} {domain} [-n HOSTNAME]
 
 
 
